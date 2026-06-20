@@ -19,3 +19,27 @@ WHERE
 	OR class_end_datetime - class_start_datetime <= interval '30 minute')
 ORDER BY class_start_datetime ASC
 LIMIT 10
+
+-------------------------------------------------------------
+
+SELECT	id_class
+		, class_start_datetime
+		, class_type
+		, CASE
+			WHEN EXTRACT (hour from class_start_datetime) BETWEEN 7 AND 9
+				THEN 'Утро'
+			WHEN EXTRACT (hour from class_start_datetime) BETWEEN 17 AND 19
+				THEN 'Вечер'
+		END AS day_part_label
+FROM skyeng_db.classes
+WHERE
+	class_status IS NOT NULL
+	AND DATE_PART('year', class_start_datetime) = 2016
+	AND DATE_PART('day', class_start_datetime) <> 1
+	AND (
+		EXTRACT (hour from class_start_datetime) BETWEEN 7 AND 9
+			OR
+		EXTRACT (hour from class_start_datetime) BETWEEN 17 AND 19
+	)
+ORDER BY class_start_datetime ASC
+LIMIT 100
