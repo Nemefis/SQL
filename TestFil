@@ -1,0 +1,21 @@
+
+SELECT	user_id
+		, id_class
+		, id_teacher
+		, class_start_datetime
+		, class_end_datetime
+		, class_end_datetime - class_start_datetime AS class_length
+		, CASE
+			WHEN class_status = 'success' THEN 1 ELSE 0 END AS flag_status
+		, CASE
+			WHEN (class_end_datetime - class_start_datetime) <= interval '20 minutes' THEN 'Урок слишком короткий'
+			WHEN (class_end_datetime - class_start_datetime) >= interval '2 hour 30 minute' THEN 'Урок слишком длинный' END AS flag_length
+FROM skyeng_db.classes
+WHERE
+	class_status = 'success'
+	AND EXTRACT (year from class_start_datetime) = 2016
+	AND EXTRACT (month from class_start_datetime) = 4
+	AND (class_end_datetime - class_start_datetime >= interval '2 hour 30 minute'
+	OR class_end_datetime - class_start_datetime <= interval '30 minute')
+ORDER BY class_start_datetime ASC
+LIMIT 10
